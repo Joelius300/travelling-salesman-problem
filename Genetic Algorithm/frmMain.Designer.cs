@@ -176,7 +176,7 @@
             // lblGen
             // 
             this.lblGen.AutoSize = true;
-            this.lblGen.Location = new System.Drawing.Point(81, 333);
+            this.lblGen.Location = new System.Drawing.Point(150, 333);
             this.lblGen.Name = "lblGen";
             this.lblGen.Size = new System.Drawing.Size(13, 13);
             this.lblGen.TabIndex = 2;
@@ -204,7 +204,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(79, 320);
+            this.label2.Location = new System.Drawing.Point(148, 320);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
             this.label2.TabIndex = 2;

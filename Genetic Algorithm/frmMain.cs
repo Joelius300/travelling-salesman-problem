@@ -161,19 +161,24 @@ namespace Genetic_Algorithm
         private void DisplayRoute(object sender, EventArgs e) {
             if (bestRoutes.Count > 0) {
                 Route r = null;
+                Route oneLower = null;
                 try
                 {
                     r = bestRoutes[tbGens.Value];
+
+                    if (tbGens.Value > 0) {
+                        oneLower = bestRoutes[tbGens.Value - 1];
+                    }
                 }
                 catch {}
 
                 if (r != null) {
-                    DisplayRoute(r);
+                    DisplayRoute(r, oneLower);
                 }
             }
         }
 
-        private void DisplayRoute(Route route) {
+        private void DisplayRoute(Route route, Route oneLower = null) {
             panelGraphics.Clear(Color.White);
 
             //Point[] points = route.GetPoints();
@@ -190,7 +195,13 @@ namespace Genetic_Algorithm
                 //}
             }
 
-            ChangeLabelText(lblDist, Math.Round(route.totalDistance, 2).ToString());
+            if (oneLower != null) {
+                ChangeLabelText(lblDist, Math.Round(route.totalDistance, 2).ToString() + $" ({Math.Round(route.totalDistance - oneLower.totalDistance, 2).ToString()})");
+            }
+            else{
+                ChangeLabelText(lblDist, Math.Round(route.totalDistance, 2).ToString());
+            }
+
             ChangeLabelText(lblGen, route.generation.ToString());
         }
 
