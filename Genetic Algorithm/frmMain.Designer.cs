@@ -103,7 +103,7 @@
             0});
             this.nudPopSize.Location = new System.Drawing.Point(57, 437);
             this.nudPopSize.Maximum = new decimal(new int[] {
-            10000,
+            2000,
             0,
             0,
             0});

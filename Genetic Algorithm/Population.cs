@@ -135,13 +135,13 @@ namespace Genetic_Algorithm
 
             //Stopwatch debugSw = new Stopwatch();
 
-            bool needsToBeThreadSafe = false;
+            //bool needsToBeThreadSafe = false;
 
             //Good use of parallel class here (enough work being done)
             cancelTokenNextGen = new CancellationTokenSource();
             if (allowedCores > 1 && allowedCores <= Environment.ProcessorCount)
             {
-                needsToBeThreadSafe = true;
+                //needsToBeThreadSafe = true;
 
                 ParallelOptions po = new ParallelOptions()
                 {
@@ -151,22 +151,56 @@ namespace Genetic_Algorithm
 
                 //debugSw.Start();
 
+                //try
+                //{
+                //    Parallel.For(0, newRoutes.Length, po, (i) =>
+                //    {
+                //        Route o1 = PickOneRoute(needsToBeThreadSafe);
+                //        Route o2;
+                //        do
+                //        {
+                //            o2 = PickOneRoute(needsToBeThreadSafe);
+                //        } while (o2 != o1);
+
+                //        Route newRoute = o1.Crossover(o2);
+                //        newRoute.Mutate(this.mutationRate);
+
+                //        newRoutes[i] = newRoute;
+                //    });
+                //}
+                //catch (OperationCanceledException e)
+                //{
+                //    Console.WriteLine(e.Message);
+                //}
+                //finally
+                //{
+                //    cancelTokenNextGen.Dispose();
+                //}
+
                 try
                 {
-                    Parallel.For(0, newRoutes.Length, po, (i) =>
-                    {
-                        Route o1 = PickOneRoute(needsToBeThreadSafe);
+                    Parallel.For<Random>(
+                        0, newRoutes.Length,    //from, to
+                        po,                     //options
+                        () => new Random(),     //initialize thread-local variable
+                        (i, loop, rng) =>       //method which uses the inumerator, the loop options (used to cancel loop e.g.) and 
+                    {                           //the thread-local variable (instance of Random class)
+                        Route o1 = PickOneRoute(rng);
                         Route o2;
                         do
                         {
-                            o2 = PickOneRoute(needsToBeThreadSafe);
+                            o2 = PickOneRoute(rng);
                         } while (o2 != o1);
 
                         Route newRoute = o1.Crossover(o2);
                         newRoute.Mutate(this.mutationRate);
 
                         newRoutes[i] = newRoute;
-                    });
+
+                        return rng;
+                    },
+                        (rng) => { }
+                    );
                 }
                 catch (OperationCanceledException e)
                 {
@@ -188,11 +222,11 @@ namespace Genetic_Algorithm
 
                 for (int i = 0; i < newRoutes.Length; i++)
                 {
-                    Route o1 = PickOneRoute(needsToBeThreadSafe);
+                    Route o1 = PickOneRoute(/*needsToBeThreadSafe*/);
                     Route o2;
                     do
                     {
-                        o2 = PickOneRoute(needsToBeThreadSafe);
+                        o2 = PickOneRoute(/*needsToBeThreadSafe*/);
                     } while (o2 != o1 && !o1.Equals(o2));
 
                     Route newRoute = o1.Crossover(o2);
@@ -210,21 +244,25 @@ namespace Genetic_Algorithm
             routes = newRoutes;
         }
 
-        private double GetRandomDoubleThreadSafe() {
-            lock (syncLock) {
-                return randomForPickOne.NextDouble();
-            }
-        }
+        //works but the threads have to wait for their turn so the way with a thread-local variable 
+        //is a lot faster (see implemented above)
+        //private double GetRandomDoubleThreadSafe() {
+        //    lock (syncLock) {
+        //        return randomForPickOne.NextDouble();
+        //    }
+        //}
 
-        public Route PickOneRoute(bool needsToBeThreadSafe)
+        public Route PickOneRoute()
         {
             int index = 0;
             double r;
 
             do
             {
-                r = needsToBeThreadSafe ? 
-                    GetRandomDoubleThreadSafe() : 
+                r = 
+                    //parameter boolean
+                    //needsToBeThreadSafe ? 
+                    //GetRandomDoubleThreadSafe() : 
                     randomForPickOne.NextDouble();
             } while (r == 0);
 
@@ -240,6 +278,33 @@ namespace Genetic_Algorithm
                 return routes[index];
             }
             catch {
+                return routes.Last(); //just in case; should never get to this point
+            }
+        }
+
+        public Route PickOneRoute(Random rng)
+        {
+            int index = 0;
+            double r;
+
+            do
+            {
+                r = rng.NextDouble();
+            } while (r == 0);
+
+            while (r > 0)
+            {
+                r = r - routes[index].fitness;
+                index++;
+            }
+            index--;
+
+            try
+            {
+                return routes[index];
+            }
+            catch
+            {
                 return routes.Last(); //just in case; should never get to this point
             }
         }

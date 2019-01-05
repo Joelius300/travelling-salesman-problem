@@ -210,7 +210,10 @@ namespace Genetic_Algorithm
             if (!th.IsAlive)
             {
                 timeEvolving = 0;
+                lblTime.Text = timeEvolving.ToString();
                 tmrEvolving.Start();
+
+                panelGraphics.Clear(Color.White);
 
                 bestRoutes = new List<Route>();
 
@@ -244,7 +247,6 @@ namespace Genetic_Algorithm
                 pop?.Cancel();
 
                 tmrEvolving.Stop();
-                lblTime.Text = "0";
 
                 //nudMutationRate.Enabled = true;
                 nudAmountCities.Enabled = true;
