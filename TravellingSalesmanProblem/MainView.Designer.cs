@@ -1,24 +1,8 @@
-﻿namespace Genetic_Algorithm
+﻿namespace TravellingSalesmanProblem
 {
-    partial class frmMain
+    partial class MainView
     {
-        /// <summary>
-        /// Erfrouteliche Designervariable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Verwendete Ressourcen bereinigen.
-        /// </summary>
-        /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
 
         #region Vom Windows Form-Designer generierter Code
 
@@ -73,7 +57,7 @@
             this.btnDoTheThing.TabIndex = 1;
             this.btnDoTheThing.Text = "Go";
             this.btnDoTheThing.UseVisualStyleBackColor = true;
-            this.btnDoTheThing.Click += new System.EventHandler(this.btnDoTheThing_Click);
+            this.btnDoTheThing.Click += new System.EventHandler(this.BtnDoTheThing_Click);
             // 
             // lblDist
             // 
@@ -92,7 +76,7 @@
             this.btnStop.TabIndex = 5;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.btnStop.Click += new System.EventHandler(this.BtnStop_Click);
             // 
             // nudPopSize
             // 
@@ -120,7 +104,7 @@
             0,
             0,
             0});
-            this.nudPopSize.ValueChanged += new System.EventHandler(this.nudPopSize_ValueChanged);
+            //this.nudPopSize.ValueChanged += new System.EventHandler(this.NudPopSize_ValueChanged);
             // 
             // nudAmountCities
             // 
@@ -148,7 +132,7 @@
             0,
             0,
             0});
-            this.nudAmountCities.ValueChanged += new System.EventHandler(this.nudAmountCities_ValueChanged);
+            //this.nudAmountCities.ValueChanged += new System.EventHandler(this.NudAmountCities_ValueChanged);
             // 
             // nudMutationRate
             // 
@@ -171,7 +155,7 @@
             0,
             0,
             0});
-            this.nudMutationRate.ValueChanged += new System.EventHandler(this.nudMutationRate_ValueChanged);
+            this.nudMutationRate.ValueChanged += new System.EventHandler(this.NudMutationRate_ValueChanged);
             // 
             // lblGen
             // 
@@ -190,7 +174,7 @@
             this.tbGens.Name = "tbGens";
             this.tbGens.Size = new System.Drawing.Size(535, 45);
             this.tbGens.TabIndex = 6;
-            this.tbGens.ValueChanged += new System.EventHandler(this.DisplayRoute);
+            this.tbGens.ValueChanged += new System.EventHandler(this.TbGens_ValueChanged);
             // 
             // label1
             // 
@@ -249,7 +233,7 @@
             // tmrEvolving
             // 
             this.tmrEvolving.Interval = 1000;
-            this.tmrEvolving.Tick += new System.EventHandler(this.tmrEvolving_Tick);
+            this.tmrEvolving.Tick += new System.EventHandler(this.TmrEvolving_Tick);
             // 
             // nudCores
             // 
@@ -272,7 +256,7 @@
             0,
             0,
             0});
-            this.nudCores.ValueChanged += new System.EventHandler(this.nudCores_ValueChanged);
+            this.nudCores.ValueChanged += new System.EventHandler(this.NudCores_ValueChanged);
             // 
             // label3
             // 
@@ -318,7 +302,7 @@
             this.btnNew.TabIndex = 5;
             this.btnNew.Text = "New";
             this.btnNew.UseVisualStyleBackColor = true;
-            this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            this.btnNew.Click += new System.EventHandler(this.BtnNew_Click);
             // 
             // frmMain
             // 
@@ -351,7 +335,7 @@
             this.Name = "frmMain";
             this.ShowIcon = false;
             this.Text = "Travelling salesman";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.nudPopSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudAmountCities)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMutationRate)).EndInit();
