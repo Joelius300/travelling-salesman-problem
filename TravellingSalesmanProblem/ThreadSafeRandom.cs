@@ -8,7 +8,7 @@ namespace TravellingSalesmanProblem
     {
         private static readonly Random s_global = new Random();
         [ThreadStatic]
-        private static Random _local;
+        private static Random? _local;
 
         public static Random ThreadSafeInstance => AssureExisting();
 

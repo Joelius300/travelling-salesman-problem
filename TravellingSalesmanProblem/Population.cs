@@ -13,12 +13,17 @@ namespace TravellingSalesmanProblem
         public IReadOnlyList<Point> Cities { get; }
         public int Size { get; set; }
         public double MutationRate { get; set; }
+        public Route Best { get; private set; }
+        public int Generation { get; private set; }
 
-        public Population(IReadOnlyList<Point> cities, int size)
+        public Population(IReadOnlyList<Point> cities, int size, double mutationRate)
         {
             Size = size;
+            MutationRate = mutationRate;
             Cities = cities ?? throw new ArgumentNullException(nameof(cities));
             _currentRoutes = GetRandomRoutes(Size);
+            Best = GetBest(_currentRoutes);
+            NormalizeFitness(_currentRoutes); // for first run
         }
 
         private Route[] GetRandomRoutes(int size)
@@ -51,7 +56,40 @@ namespace TravellingSalesmanProblem
                 newRoutes[i] = newRoute;
             }
 
+            NormalizeFitness(newRoutes); // for next run
+            Best = GetBest(newRoutes);
             _currentRoutes = newRoutes;
+            Generation++;
+        }
+
+        private static void NormalizeFitness(Route[] routes)
+        {
+            double total = 0;
+            for (int i = 0; i < routes.Length; i++)
+            {
+                total += routes[i].Fitness;
+            }
+
+            for (int i = 0; i < routes.Length; i++)
+            {
+                routes[i].Fitness /= total;
+            }
+        }
+
+        private static Route GetBest(IEnumerable<Route> routes)
+        {
+            double bestDistance = double.MaxValue;
+            Route? best = null;
+            foreach (Route route in routes)
+            {
+                if (route.TotalDistance < bestDistance)
+                {
+                    bestDistance = route.TotalDistance;
+                    best = route;
+                }
+            }
+
+            return best!; // ignore this warning, it won't be null
         }
     }
 }
