@@ -14,72 +14,241 @@ namespace TravellingSalesmanProblem
 {
     public partial class MainView : Form
     {
-        private const int AmountCities = 30;
-        private const int PopulationSize = 500;
-        private const double MutationRate = 0.03;
+        private const string ZeroString = "0";
+        private const string TimeFormatString = "{0:hh\\:mm\\:ss}";
 
-        private readonly ImmutableArray<Point> _cities;
         private readonly Random _random;
-        private readonly Population _pop;
-        private readonly CancellationTokenSource _cts;
-        private Route? _best;
+        private readonly List<(Route route, int gen)> _routeHistory;
+        private Point[]? _cities;
+        private Population? _pop;
+        private CancellationTokenSource? _cts;
         private Task? _runningTask;
+        private DateTime _startTime;
+        private Route? _bestRoute;
+        private Route? _currentRoute;
 
         public MainView()
         {
             _random = new Random();
+            _routeHistory = new List<(Route route, int gen)>();
             InitializeComponent();
-            _panel.Paint += Panel_Paint;
             DoubleBuffered = true;
-            _cities = ImmutableArray.ToImmutableArray(_random.GenerateRandomPoints(AmountCities, _panel.Size));
-            _pop = new Population(_cities, PopulationSize, MutationRate);
-            Load += MainView_FormLoad;
-            FormClosing += MainView_FormClosing;
+        }
+
+        private void Reset()
+        {
+            _routeHistory.Clear();
+            _currentRoute = null;
+            _bestRoute = null;
+            _cts?.Cancel();
+            _lblDist.Text = ZeroString;
+            _lblGen.Text = ZeroString;
+            _lblGenATM.Text = ZeroString;
+            _lblTime.Text = string.Format(TimeFormatString, TimeSpan.Zero);
+            _nudAmountCities.Enabled = true;
+        }
+
+        private void Start(int amountCities, int populationSize, double mutationRate, Size area)
+        {
+            if (_pop != null) // we only need to reset if there was something before
+                Reset();
+
             _cts = new CancellationTokenSource();
-        }
+            _cities = _random.GenerateRandomPoints(amountCities, area).ToArray();
+            _pop = new Population(_cities, populationSize, mutationRate);
 
-        private void Panel_Paint(object sender, PaintEventArgs e)
-        {
-            if (_best is null)
-                return;
-
-            using Graphics graphics = e.Graphics;
-            using Pen pen = new Pen(Color.Green, 2);
-
-            graphics.Clear(Color.White);
-            graphics.DrawLines(pen, _best.Points.ToArray());
-        }
-
-        private void MainView_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _cts.Cancel();
-        }
-
-        private void MainView_FormLoad(object? sender, EventArgs e)
-        {
             CancellationToken token = _cts.Token;
             _runningTask = Task.Run(() => DoTheThing(token), token);
+            _startTime = DateTime.UtcNow;
+            _tmrEvolving.Start();
+            _nudAmountCities.Enabled = false;
 
             void DoTheThing(CancellationToken cancelToken)
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
                     NextGeneration();
+                    ChangeLabelText(_lblGenATM, _pop!.Generation.ToString());
                 }
             }
         }
 
         private void NextGeneration()
         {
-            Console.WriteLine($"Generation: {_pop.Generation}");
-            Console.WriteLine($"Best: {_best}");
+            if (_pop == null)
+                return;
+
             _pop.NextGeneration();
 
-            if (_best is null || _pop.Best.TotalDistance < _best.TotalDistance)
+            if (_bestRoute == null || _pop.Best.TotalDistance < _bestRoute.TotalDistance)
             {
-                _best = _pop.Best;
-                _panel.Invalidate();
+                _bestRoute = _pop.Best;
+                int gen = _pop.Generation;
+                _routeHistory.Add((_bestRoute, gen));
+                ChangeTrackBarMaximum(_tbGens, _routeHistory.Count-1);
+
+                if (_routeHistory.Count == 1)
+                {
+                    DisplayRoute(0);
+                }
+                else
+                {
+                    ChangeTrackBarValue(_tbGens, _routeHistory.Count - 1);
+                }
             }
+        }
+
+        private void ChangeLabelText(Label label, string text)
+        {
+            if (label.InvokeRequired)
+            {
+                Invoke(new MethodInvoker(UpdateText));
+            }
+            else
+            {
+                UpdateText();
+            }
+
+            void UpdateText()
+            {
+                label.Text = text;
+            }
+        }
+
+        private void ChangeTrackBarMaximum(TrackBar trackBar, int max)
+        {
+            if (trackBar.InvokeRequired)
+            {
+                Invoke(new MethodInvoker(UpdateMaximum));
+            }
+            else
+            {
+                UpdateMaximum();
+            }
+
+            void UpdateMaximum()
+            {
+                trackBar.Maximum = max;
+            }
+        }
+
+        private void ChangeTrackBarValue(TrackBar trackBar, int value)
+        {
+            if (trackBar.InvokeRequired)
+            {
+                Invoke(new MethodInvoker(UpdateValue));
+            }
+            else
+            {
+                UpdateValue();
+            }
+
+            void UpdateValue()
+            {
+                trackBar.Value = value;
+            }
+        }
+
+        private void BtnStart_Click(object sender, EventArgs e)
+        {
+            int amountCities = (int)_nudAmountCities.Value;
+            int popSize = (int)_nudPopSize.Value;
+            double mutationRate = (double)_nudMutationRate.Value / 100;
+            Size panelSize = _pnlCities.Size;
+
+            Start(amountCities, popSize, mutationRate, panelSize);
+        }
+
+        private void PnlCities_Paint(object sender, PaintEventArgs e)
+        {
+            if (_currentRoute == null)
+                return;
+
+            using Graphics graphics = e.Graphics;
+            using Pen pen = new Pen(Color.Green, 2);
+
+            graphics.Clear(Color.White);
+            graphics.DrawLines(pen, _currentRoute.Points.ToArray());
+        }
+
+        private void TmrEvolving_Tick(object sender, EventArgs e)
+        {
+            _lblTime.Text = string.Format(TimeFormatString, DateTime.UtcNow.Subtract(_startTime));
+        }
+
+        private void TbGens_ValueChanged(object sender, EventArgs e)
+        {
+            DisplayRoute(_tbGens.Value);
+        }
+
+        private void DisplayRoute(int historyIndex)
+        {
+            var (route, gen) = _routeHistory[historyIndex];
+            _currentRoute = route;
+            ChangeLabelText(_lblGen, gen.ToString());
+            string distanceText = $"{route.TotalDistance:F2}";
+            if (historyIndex > 0)
+                distanceText += $" (-{_routeHistory[historyIndex - 1].route.TotalDistance:F2})";
+            ChangeLabelText(_lblDist, distanceText);
+            _pnlCities.Invalidate();
+        }
+
+        private void NudPopSize_ValueChanged(object sender, EventArgs e)
+        {
+            if (_pop == null)
+                return;
+
+            _pop.Size = (int)_nudPopSize.Value;
+        }
+
+        private void NudMutationRate_ValueChanged(object sender, EventArgs e)
+        {
+            if (_pop == null)
+                return;
+
+            _pop.MutationRate = (double)_nudMutationRate.Value / 100;
+        }
+
+        private void NudCores_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        // doesn't work because the TotalDistances would have to be recalculated because the coordinates are not normalized (yet)
+        // private void MainView_ResizeEnd(object sender, EventArgs e)
+        // {
+        //     if (_cities == null)
+        //         return;
+
+        //     Size newSize = _pnlCities.Size;
+        //     for (int i = 0; i < _cities.Length; i++)
+        //     {
+        //         Point oldPoint = _cities[i];
+        //         Point newPoint = new Point
+        //         {
+        //             X = (int)Map(oldPoint.X, 0, _lastSize.Width, 0, newSize.Width),
+        //             Y = (int)Map(oldPoint.Y, 0, _lastSize.Width, 0, newSize.Width)
+        //         };
+        //         _cities[i] = newPoint;
+        //     }
+
+        //     _lastSize = newSize;
+        //     _pnlCities.Invalidate();
+
+        //     static decimal Map(decimal value, decimal fromSource, decimal toSource, decimal fromTarget, decimal toTarget) =>
+        //         (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
+        // }
+
+        private void BtnStop_Click(object sender, EventArgs e)
+        {
+            _tmrEvolving.Stop();
+            _cts?.Cancel();
+        }
+
+        private void MainView_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _tmrEvolving.Stop();
+            _cts?.Cancel();
         }
 
         /// <summary>
@@ -90,8 +259,8 @@ namespace TravellingSalesmanProblem
         {
             if (disposing)
             {
+                _cts?.Dispose();
                 components?.Dispose();
-                _cts.Dispose();
             }
 
             base.Dispose(disposing);

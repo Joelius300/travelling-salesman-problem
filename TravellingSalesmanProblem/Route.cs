@@ -70,7 +70,7 @@ namespace TravellingSalesmanProblem
 
         public Route Crossover(Route other)
         {
-            if (other is null)
+            if (other == null)
                 throw new ArgumentNullException(nameof(other));
 
             int start = ThreadSafeRandom.Next(_order.Count);
@@ -116,9 +116,14 @@ namespace TravellingSalesmanProblem
         public override int GetHashCode() =>
             HashCode.Combine(_cities, _order, TotalDistance);
 
-        public static bool operator ==(Route left, Route right) => 
-            EqualityComparer<Route>.Default.Equals(left, right);
+        public static bool operator ==(Route? left, Route? right)
+        {
+            if (left is null)
+                return right is null;
+            
+            return EqualityComparer<Route>.Default.Equals(left, right);
+        }
 
-        public static bool operator !=(Route left, Route right) => !(left == right);
+        public static bool operator !=(Route? left, Route? right) => !(left == right);
     }
 }
