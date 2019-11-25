@@ -96,14 +96,14 @@
             // 
             this._nudPopSize.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this._nudPopSize.Increment = new decimal(new int[] {
-            100,
+            250,
             0,
             0,
             0});
             this._nudPopSize.Location = new System.Drawing.Point(66, 463);
             this._nudPopSize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudPopSize.Maximum = new decimal(new int[] {
-            2000,
+            10000,
             0,
             0,
             0});
@@ -126,14 +126,14 @@
             // 
             this._nudAmountCities.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this._nudAmountCities.Increment = new decimal(new int[] {
-            5,
+            10,
             0,
             0,
             0});
             this._nudAmountCities.Location = new System.Drawing.Point(164, 463);
             this._nudAmountCities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudAmountCities.Maximum = new decimal(new int[] {
-            50,
+            100,
             0,
             0,
             0});

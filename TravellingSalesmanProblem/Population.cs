@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TravellingSalesmanProblem
 {
@@ -13,6 +14,7 @@ namespace TravellingSalesmanProblem
         public IReadOnlyList<Point> Cities { get; }
         public int Size { get; set; }
         public double MutationRate { get; set; }
+        public int AmountCores { get; set; }
         public Route Best { get; private set; }
         public int Generation { get; private set; }
 
@@ -41,25 +43,67 @@ namespace TravellingSalesmanProblem
         {
             Route[] newRoutes = new Route[Size];
 
-            for (int i = 0; i < newRoutes.Length; i++)
+            if (AmountCores > 1 && AmountCores <= Environment.ProcessorCount)
             {
-                Route o1 = ThreadSafeRandom.ThreadSafeInstance.PickRouteAccordingToFitness(_currentRoutes);
-                Route o2;
-                do
+                ParallelOptions po = new ParallelOptions()
                 {
-                    o2 = ThreadSafeRandom.ThreadSafeInstance.PickRouteAccordingToFitness(_currentRoutes);
-                } while (o1 == o2);
+                    MaxDegreeOfParallelism = AmountCores
+                };
 
-                Route newRoute = o1.Crossover(o2);
-                newRoute.Mutate(MutationRate);
+                Parallel.For(
+                    0, newRoutes.Length,    // from, to
+                    po,                     // options
+                    (i, loop) =>            // method which uses the inumerator and the loop state (used to cancel loop )
+                    {
+                        newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
+                    }
+                );
 
-                newRoutes[i] = newRoute;
+                // This also works but I assume it's a bit less random. The thread-local Random which is used here will be created using the default
+                // constructor which, if called multiple times in a small timeframe (like here), might produce the same "random"-sequences. However if you use
+                // the ThreadSafeRandom class, the thread-local (or thread-static) instance will be created using a random seed from a global (non-thread-static)
+                // Random instance. The lock which is used for aquiring a random seed for a new thread-local Random instance probably makes the current solution
+                // slightly less performant but not by much (only very rough and sloppy testing was done).
+                // Parallel.For(
+                //     0, newRoutes.Length,    // from, to
+                //     po,                     // options
+                //     () => new Random(),     // initialize thread-local variable
+                //     (i, loop, rng) =>       // method which uses the inumerator and the loop state (used to cancel loop )
+                //     {
+                //         newRoutes[i] = GetNewRoute(rng);
+
+                //         return rng;
+                //     },
+                //     rng => { } // no-op because null is not allowed
+                // );
+            }
+            else
+            {
+                for (int i = 0; i < newRoutes.Length; i++)
+                {
+                    newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
+                }
             }
 
             NormalizeFitness(newRoutes); // for next run
             Best = GetBest(newRoutes);
             _currentRoutes = newRoutes;
             Generation++;
+
+            Route GetNewRoute(Random random)
+            {
+                Route o1 = random.PickRouteAccordingToFitness(_currentRoutes);
+                Route o2;
+                do
+                {
+                    o2 = random.PickRouteAccordingToFitness(_currentRoutes);
+                } while (o1 == o2);
+
+                Route newRoute = o1.Crossover(o2);
+                newRoute.Mutate(MutationRate);
+
+                return newRoute;
+            }
         }
 
         private static void NormalizeFitness(Route[] routes)

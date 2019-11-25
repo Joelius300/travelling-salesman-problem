@@ -22,7 +22,7 @@ namespace TravellingSalesmanProblem
         private Point[]? _cities;
         private Population? _pop;
         private CancellationTokenSource? _cts;
-        private Task? _runningTask;
+        // private Task? _runningTask;
         private DateTime _startTime;
         private Route? _bestRoute;
         private Route? _currentRoute;
@@ -32,6 +32,7 @@ namespace TravellingSalesmanProblem
             _random = new Random();
             _routeHistory = new List<(Route route, int gen)>();
             InitializeComponent();
+            _nudCores.Maximum = Environment.ProcessorCount;
             DoubleBuffered = true;
         }
 
@@ -45,7 +46,6 @@ namespace TravellingSalesmanProblem
             _lblGen.Text = ZeroString;
             _lblGenATM.Text = ZeroString;
             _lblTime.Text = string.Format(TimeFormatString, TimeSpan.Zero);
-            _nudAmountCities.Enabled = true;
         }
 
         private void Start(int amountCities, int populationSize, double mutationRate, Size area)
@@ -55,10 +55,13 @@ namespace TravellingSalesmanProblem
 
             _cts = new CancellationTokenSource();
             _cities = _random.GenerateRandomPoints(amountCities, area).ToArray();
-            _pop = new Population(_cities, populationSize, mutationRate);
+            _pop = new Population(_cities, populationSize, mutationRate)
+            {
+                AmountCores = (int)_nudCores.Value
+            };
 
             CancellationToken token = _cts.Token;
-            _runningTask = Task.Run(() => DoTheThing(token), token);
+            _ = Task.Run(() => DoTheThing(token), token);
             _startTime = DateTime.UtcNow;
             _tmrEvolving.Start();
             _nudAmountCities.Enabled = false;
@@ -68,7 +71,7 @@ namespace TravellingSalesmanProblem
                 while (!cancelToken.IsCancellationRequested)
                 {
                     NextGeneration();
-                    ChangeLabelText(_lblGenATM, _pop!.Generation.ToString());
+                    _lblGenATM.SetText(_pop!.Generation.ToString());
                 }
             }
         }
@@ -85,7 +88,7 @@ namespace TravellingSalesmanProblem
                 _bestRoute = _pop.Best;
                 int gen = _pop.Generation;
                 _routeHistory.Add((_bestRoute, gen));
-                ChangeTrackBarMaximum(_tbGens, _routeHistory.Count-1);
+                _tbGens.SetMaximum(_routeHistory.Count - 1);
 
                 if (_routeHistory.Count == 1)
                 {
@@ -93,59 +96,8 @@ namespace TravellingSalesmanProblem
                 }
                 else
                 {
-                    ChangeTrackBarValue(_tbGens, _routeHistory.Count - 1);
+                    _tbGens.SetValue(_routeHistory.Count - 1);
                 }
-            }
-        }
-
-        private void ChangeLabelText(Label label, string text)
-        {
-            if (label.InvokeRequired)
-            {
-                Invoke(new MethodInvoker(UpdateText));
-            }
-            else
-            {
-                UpdateText();
-            }
-
-            void UpdateText()
-            {
-                label.Text = text;
-            }
-        }
-
-        private void ChangeTrackBarMaximum(TrackBar trackBar, int max)
-        {
-            if (trackBar.InvokeRequired)
-            {
-                Invoke(new MethodInvoker(UpdateMaximum));
-            }
-            else
-            {
-                UpdateMaximum();
-            }
-
-            void UpdateMaximum()
-            {
-                trackBar.Maximum = max;
-            }
-        }
-
-        private void ChangeTrackBarValue(TrackBar trackBar, int value)
-        {
-            if (trackBar.InvokeRequired)
-            {
-                Invoke(new MethodInvoker(UpdateValue));
-            }
-            else
-            {
-                UpdateValue();
-            }
-
-            void UpdateValue()
-            {
-                trackBar.Value = value;
             }
         }
 
@@ -185,11 +137,13 @@ namespace TravellingSalesmanProblem
         {
             var (route, gen) = _routeHistory[historyIndex];
             _currentRoute = route;
-            ChangeLabelText(_lblGen, gen.ToString());
+            _lblGen.SetText(gen.ToString());
             string distanceText = $"{route.TotalDistance:F2}";
             if (historyIndex > 0)
-                distanceText += $" (-{_routeHistory[historyIndex - 1].route.TotalDistance:F2})";
-            ChangeLabelText(_lblDist, distanceText);
+            {
+                distanceText += $" ({route.TotalDistance - _routeHistory[historyIndex - 1].route.TotalDistance:F2})";
+            }
+            _lblDist.SetText(distanceText);
             _pnlCities.Invalidate();
         }
 
@@ -211,7 +165,10 @@ namespace TravellingSalesmanProblem
 
         private void NudCores_ValueChanged(object sender, EventArgs e)
         {
+            if (_pop == null)
+                return;
 
+            _pop.AmountCores = (int)_nudCores.Value;
         }
 
         // doesn't work because the TotalDistances would have to be recalculated because the coordinates are not normalized (yet)
@@ -241,13 +198,13 @@ namespace TravellingSalesmanProblem
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
+            _nudAmountCities.Enabled = true;
             _tmrEvolving.Stop();
             _cts?.Cancel();
         }
 
         private void MainView_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _tmrEvolving.Stop();
             _cts?.Cancel();
         }
 
