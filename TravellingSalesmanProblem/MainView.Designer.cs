@@ -59,7 +59,7 @@
             // 
             // _btnStart
             // 
-            this._btnStart.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._btnStart.Location = new System.Drawing.Point(14, 462);
             this._btnStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._btnStart.Name = "_btnStart";
@@ -94,7 +94,7 @@
             // 
             // _nudPopSize
             // 
-            this._nudPopSize.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._nudPopSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._nudPopSize.Increment = new decimal(new int[] {
             250,
             0,
@@ -124,7 +124,7 @@
             // 
             // _nudAmountCities
             // 
-            this._nudAmountCities.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._nudAmountCities.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._nudAmountCities.Increment = new decimal(new int[] {
             10,
             0,
@@ -132,11 +132,6 @@
             0});
             this._nudAmountCities.Location = new System.Drawing.Point(164, 463);
             this._nudAmountCities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this._nudAmountCities.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
             this._nudAmountCities.Minimum = new decimal(new int[] {
             5,
             0,
@@ -153,7 +148,7 @@
             // 
             // _nudMutationRate
             // 
-            this._nudMutationRate.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._nudMutationRate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._nudMutationRate.Location = new System.Drawing.Point(252, 463);
             this._nudMutationRate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudMutationRate.Maximum = new decimal(new int[] {
@@ -273,7 +268,7 @@
             // 
             // _nudCores
             // 
-            this._nudCores.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._nudCores.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._nudCores.Location = new System.Drawing.Point(340, 463);
             this._nudCores.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudCores.Maximum = new decimal(new int[] {
@@ -298,7 +293,7 @@
             // 
             // _label3
             // 
-            this._label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label3.AutoSize = true;
             this._label3.Location = new System.Drawing.Point(336, 445);
             this._label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -309,7 +304,7 @@
             // 
             // _label6
             // 
-            this._label6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label6.AutoSize = true;
             this._label6.Location = new System.Drawing.Point(248, 445);
             this._label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -320,7 +315,7 @@
             // 
             // _label7
             // 
-            this._label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label7.AutoSize = true;
             this._label7.Location = new System.Drawing.Point(161, 445);
             this._label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -331,7 +326,7 @@
             // 
             // _label8
             // 
-            this._label8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this._label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label8.AutoSize = true;
             this._label8.Location = new System.Drawing.Point(63, 445);
             this._label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -377,13 +372,13 @@
             this.Controls.Add(this._lblDist);
             this.Controls.Add(this._btnStart);
             this.Controls.Add(this._pnlCities);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.MaximizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(525, 430);
             this.Name = "MainView";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainView_FormClosing);
+            this.Resize += new System.EventHandler(this.MainView_Resize);
             ((System.ComponentModel.ISupportInitialize)(this._nudPopSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudAmountCities)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudMutationRate)).EndInit();

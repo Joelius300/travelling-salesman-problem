@@ -19,7 +19,7 @@ namespace TravellingSalesmanProblem
 
         private readonly Random _random;
         private readonly List<(Route route, int gen)> _routeHistory;
-        private Point[]? _cities;
+        private PointF[]? _cities;
         private Population? _pop;
         private CancellationTokenSource? _cts;
         // private Task? _runningTask;
@@ -48,13 +48,13 @@ namespace TravellingSalesmanProblem
             _lblTime.Text = string.Format(TimeFormatString, TimeSpan.Zero);
         }
 
-        private void Start(int amountCities, int populationSize, double mutationRate, Size area)
+        private void Start(int amountCities, int populationSize, double mutationRate)
         {
             if (_pop != null) // we only need to reset if there was something before
                 Reset();
 
             _cts = new CancellationTokenSource();
-            _cities = _random.GenerateRandomPoints(amountCities, area).ToArray();
+            _cities = _random.GenerateRandomPoints(amountCities).ToArray();
             _pop = new Population(_cities, populationSize, mutationRate)
             {
                 AmountCores = (int)_nudCores.Value
@@ -106,9 +106,8 @@ namespace TravellingSalesmanProblem
             int amountCities = (int)_nudAmountCities.Value;
             int popSize = (int)_nudPopSize.Value;
             double mutationRate = (double)_nudMutationRate.Value / 100;
-            Size panelSize = _pnlCities.Size;
 
-            Start(amountCities, popSize, mutationRate, panelSize);
+            Start(amountCities, popSize, mutationRate);
         }
 
         private void PnlCities_Paint(object sender, PaintEventArgs e)
@@ -120,7 +119,7 @@ namespace TravellingSalesmanProblem
             using Pen pen = new Pen(Color.Green, 2);
 
             graphics.Clear(Color.White);
-            graphics.DrawLines(pen, _currentRoute.Points.ToArray());
+            graphics.DrawLines(pen, _currentRoute.Points.Select(p => MapPointFToSize(p, _pnlCities.Size)).ToArray());
         }
 
         private void TmrEvolving_Tick(object sender, EventArgs e)
@@ -171,30 +170,10 @@ namespace TravellingSalesmanProblem
             _pop.AmountCores = (int)_nudCores.Value;
         }
 
-        // doesn't work because the TotalDistances would have to be recalculated because the coordinates are not normalized (yet)
-        // private void MainView_ResizeEnd(object sender, EventArgs e)
-        // {
-        //     if (_cities == null)
-        //         return;
-
-        //     Size newSize = _pnlCities.Size;
-        //     for (int i = 0; i < _cities.Length; i++)
-        //     {
-        //         Point oldPoint = _cities[i];
-        //         Point newPoint = new Point
-        //         {
-        //             X = (int)Map(oldPoint.X, 0, _lastSize.Width, 0, newSize.Width),
-        //             Y = (int)Map(oldPoint.Y, 0, _lastSize.Width, 0, newSize.Width)
-        //         };
-        //         _cities[i] = newPoint;
-        //     }
-
-        //     _lastSize = newSize;
-        //     _pnlCities.Invalidate();
-
-        //     static decimal Map(decimal value, decimal fromSource, decimal toSource, decimal fromTarget, decimal toTarget) =>
-        //         (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
-        // }
+        private void MainView_Resize(object sender, EventArgs e)
+        {
+            _pnlCities.Invalidate();
+        }
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
@@ -222,5 +201,12 @@ namespace TravellingSalesmanProblem
 
             base.Dispose(disposing);
         }
+
+        private static Point MapPointFToSize(PointF value, Size size) =>
+            new Point
+            {
+                X = (int)(value.X * size.Width),
+                Y = (int)(value.Y * size.Height)
+            };
     }
 }

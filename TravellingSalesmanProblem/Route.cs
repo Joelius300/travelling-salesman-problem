@@ -9,23 +9,23 @@ namespace TravellingSalesmanProblem
 {
     public class Route : IEquatable<Route>
     {
-        private readonly IReadOnlyList<Point> _cities;
+        private readonly IReadOnlyList<PointF> _cities;
         private readonly IList<int> _order;
 
         public double TotalDistance { get; }
         public double Fitness { get; internal set; }
-        public IEnumerable<Point> Points => GetPoints();
+        public IEnumerable<PointF> Points => GetPoints();
 
-        public Route(IReadOnlyList<Point> cities, IList<int> order)
+        public Route(IReadOnlyList<PointF> cities, IList<int> order)
         {
             _cities = cities ?? throw new ArgumentNullException(nameof(cities));
             _order = order ?? throw new ArgumentNullException(nameof(order));
 
-            TotalDistance = CalcTotalDistance();
+            TotalDistance = CalcTotalDistance() * 100; // just so it's a bigger number
             Fitness = 1 / (Math.Pow(TotalDistance, 8) + 1); // good formula but has to be normalized over all routes
         }
 
-        private IEnumerable<Point> GetPoints()
+        private IEnumerable<PointF> GetPoints()
         {
             for (int i = 0; i < _order.Count; i++)
             {
@@ -48,7 +48,7 @@ namespace TravellingSalesmanProblem
             return totalDistance;
         }
 
-        private static double CalcDistance(Point p1, Point p2) =>
+        private static double CalcDistance(PointF p1, PointF p2) =>
             // Pythagoras
             Math.Sqrt(((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y)));
 

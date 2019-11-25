@@ -11,14 +11,14 @@ namespace TravellingSalesmanProblem
     {
         private Route[] _currentRoutes;
 
-        public IReadOnlyList<Point> Cities { get; }
+        public IReadOnlyList<PointF> Cities { get; }
         public int Size { get; set; }
         public double MutationRate { get; set; }
         public int AmountCores { get; set; }
         public Route Best { get; private set; }
         public int Generation { get; private set; }
 
-        public Population(IReadOnlyList<Point> cities, int size, double mutationRate)
+        public Population(IReadOnlyList<PointF> cities, int size, double mutationRate)
         {
             Size = size;
             MutationRate = mutationRate;

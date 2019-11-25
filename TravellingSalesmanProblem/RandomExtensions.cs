@@ -26,14 +26,14 @@ namespace TravellingSalesmanProblem
             }
         }
 
-        public static IEnumerable<Point> GenerateRandomPoints(this Random rng, int amount, Size size)
+        public static IEnumerable<PointF> GenerateRandomPoints(this Random rng, int amount)
         {
             if (rng == null)
                 throw new ArgumentNullException(nameof(rng));
 
             for (int i = 0; i < amount; i++)
             {
-                yield return new Point(rng.Next(0, size.Width), rng.Next(0, size.Height));
+                yield return new PointF(Convert.ToSingle(rng.NextDouble()), Convert.ToSingle(rng.NextDouble()));
             }
         }
 
