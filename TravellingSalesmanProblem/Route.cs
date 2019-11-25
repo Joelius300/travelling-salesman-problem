@@ -4,95 +4,121 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TravellingSalesmanProblem
 {
     public class Route : IEquatable<Route>
     {
-        private static readonly Random s_rnd = new Random();
-        private readonly DNA _dna;
+        private readonly IReadOnlyList<Point> _cities;
+        private readonly IList<int> _order;
 
-        public double TotalDistance { get; private set; }
+        public double TotalDistance { get; }
         public double Fitness { get; internal set; }
-        public int Generation { get; internal set; }
-        public Point[] Points => _dna.Route;
+        public IEnumerable<Point> Points => GetPoints();
 
-        public Route(Point[] cities)
+        public Route(IReadOnlyList<Point> cities, IList<int> order)
         {
-            s_rnd.Shuffle(cities);
-            _dna = new DNA(cities);
+            _cities = cities ?? throw new ArgumentNullException(nameof(cities));
+            _order = order ?? throw new ArgumentNullException(nameof(order));
 
             TotalDistance = CalcTotalDistance();
+            Fitness = 1 / (Math.Pow(TotalDistance, 8) + 1); // good formula but has to be normalized over all routes
         }
 
-        // This constructor will only be used whenever there is a crossover happening. 
-        // After a crossover there will always be a mutation and after the mutation there will always
-        // be a calculation of the distance. So we can take away almost half the calculations by not doing it here
-        private Route(DNA dna)
+        private IEnumerable<Point> GetPoints()
         {
-            _dna = dna;
+            for (int i = 0; i < _order.Count; i++)
+            {
+                // int cityIndex = _order[i];
+                yield return _cities[_order[i]];
+            }
         }
 
         private double CalcTotalDistance()
         {
             double totalDistance = 0;
 
-            for (int i = 0; i < _dna.Route.Length - 1; i++)
+            for (int i = 0; i < _order.Count - 1; i++)
             {
-                totalDistance += CalcDistance(_dna.Route[i], _dna.Route[i + 1]);
+                // int indexA = _order[i];
+                // int indexB = _order[i+1];
+                totalDistance += CalcDistance(_cities[_order[i]], _cities[_order[i+1]]);
             }
 
             return totalDistance;
         }
 
-        //This method is called a LOT so its as optimized as possible (resulting in ugly code)
-        private double CalcDistance(Point p1, Point p2) =>
+        private static double CalcDistance(Point p1, Point p2) =>
             // Pythagoras
             Math.Sqrt(((p2.X - p1.X) * (p2.X - p1.X)) + ((p2.Y - p1.Y) * (p2.Y - p1.Y)));
 
-        public Route Crossover(Route otherRoute) =>
-            new Route(_dna.Crossover(otherRoute._dna));
-
         public void Mutate(double rate)
         {
-            _dna.Mutate(rate);
-            TotalDistance = CalcTotalDistance();
+            for (int i = 0; i < _order.Count / 2; i++)
+            {
+                if (ThreadSafeRandom.NextDouble() < rate)
+                {
+                    int i1 = ThreadSafeRandom.Next(_order.Count);
+                    int i2 = (i1 + 1) % _order.Count;
+
+                    int temp = _order[i2];
+                    _order[i2] = _order[i1];
+                    _order[i1] = temp;
+                }
+            }
         }
 
-        public static bool operator ==(Route a, Route b)
+        public Route Crossover(Route other)
         {
-            if (a is null)
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
+            int start = ThreadSafeRandom.Next(_order.Count);
+            int count = ThreadSafeRandom.Next(_order.Count - start + 1);
+
+            List<int> newOrder = new List<int>(_order.Skip(start).Take(count));
+
+            for (int i = 0; i < other._order.Count; i++)
             {
-                return b is null;
+                int cityIndex = other._order[i];
+                if (!newOrder.Contains(cityIndex))
+                    newOrder.Add(cityIndex);
             }
 
-            return a.Equals(b);
+            return new Route(_cities, newOrder);
         }
 
-        public static bool operator !=(Route a, Route b) => !(a == b);
-
-        public bool Equals([AllowNull] Route other)
+        public bool Equals(Route? other)
         {
             if (other is null)
                 return false;
 
-            if (ReferenceEquals(other, this))
+            if (ReferenceEquals(this, other))
                 return true;
 
-            return _dna.Equals(other._dna);
+            // The cities have to be the same collection
+            return ReferenceEquals(_cities, other._cities) &&
+                (ReferenceEquals(_order, other._order) ||
+                Enumerable.SequenceEqual(_order, other._order));
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj is Route dna && obj != null)
-                return Equals(dna);
+            if (obj is Route route)
+                return Equals(route);
 
-            return base.Equals(obj);
+            return false;
         }
 
-        public override int GetHashCode() => _dna.GetHashCode();
+        public override string? ToString() =>
+            $"Distance: {TotalDistance}, Order: {string.Join(", ", _order)}";
 
-        public override string ToString() => $"Route: {_dna}";
+        public override int GetHashCode() =>
+            HashCode.Combine(_cities, _order, TotalDistance);
+
+        public static bool operator ==(Route left, Route right) => 
+            EqualityComparer<Route>.Default.Equals(left, right);
+
+        public static bool operator !=(Route left, Route right) => !(left == right);
     }
 }
