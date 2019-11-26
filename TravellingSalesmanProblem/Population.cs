@@ -10,6 +10,7 @@ namespace TravellingSalesmanProblem
     public class Population
     {
         private Route[] _currentRoutes;
+        private readonly ParallelOptions _parallelOptions;
 
         public IReadOnlyList<PointF> Cities { get; }
         public int Size { get; set; }
@@ -26,6 +27,7 @@ namespace TravellingSalesmanProblem
             _currentRoutes = GetRandomRoutes(Size);
             Best = GetBest(_currentRoutes);
             NormalizeFitness(_currentRoutes); // for first run
+            _parallelOptions = new ParallelOptions();
         }
 
         private Route[] GetRandomRoutes(int size)
@@ -45,15 +47,12 @@ namespace TravellingSalesmanProblem
 
             if (AmountCores > 1 && AmountCores <= Environment.ProcessorCount)
             {
-                ParallelOptions po = new ParallelOptions()
-                {
-                    MaxDegreeOfParallelism = AmountCores
-                };
+                _parallelOptions.MaxDegreeOfParallelism = AmountCores;
 
                 Parallel.For(
                     0, newRoutes.Length,    // from, to
-                    po,                     // options
-                    (i, loop) =>            // method which uses the inumerator and the loop state (used to cancel loop )
+                    _parallelOptions,       // options
+                    (i, loop) =>            // method which uses the index and the loop state (used to cancel loop)
                     {
                         newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
                     }
@@ -66,9 +65,9 @@ namespace TravellingSalesmanProblem
                 // slightly less performant but not by much (only very rough and sloppy testing was done).
                 // Parallel.For(
                 //     0, newRoutes.Length,    // from, to
-                //     po,                     // options
+                //     _parallelOptions,       // options
                 //     () => new Random(),     // initialize thread-local variable
-                //     (i, loop, rng) =>       // method which uses the inumerator and the loop state (used to cancel loop )
+                //     (i, loop, rng) =>       // method which uses the index, the loop state (used to cancel loop) and the thread-local Random
                 //     {
                 //         newRoutes[i] = GetNewRoute(rng);
 

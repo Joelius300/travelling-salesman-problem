@@ -19,7 +19,7 @@ namespace TravellingSalesmanProblem
 
         private readonly Random _random;
         private readonly List<(Route route, int gen)> _routeHistory;
-        private PointF[]? _cities;
+        private ImmutableArray<PointF> _cities;
         private Population? _pop;
         private CancellationTokenSource? _cts;
         // private Task? _runningTask;
@@ -54,7 +54,7 @@ namespace TravellingSalesmanProblem
                 Reset();
 
             _cts = new CancellationTokenSource();
-            _cities = _random.GenerateRandomPoints(amountCities).ToArray();
+            _cities = ImmutableArray.ToImmutableArray(_random.GenerateRandomPoints(amountCities));
             _pop = new Population(_cities, populationSize, mutationRate)
             {
                 AmountCores = (int)_nudCores.Value
