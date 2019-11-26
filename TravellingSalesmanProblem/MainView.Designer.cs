@@ -53,18 +53,18 @@
             this._pnlCities.Location = new System.Drawing.Point(14, 14);
             this._pnlCities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._pnlCities.Name = "_pnlCities";
-            this._pnlCities.Size = new System.Drawing.Size(624, 314);
+            this._pnlCities.Size = new System.Drawing.Size(624, 315);
             this._pnlCities.TabIndex = 0;
             this._pnlCities.Paint += new System.Windows.Forms.PaintEventHandler(this.PnlCities_Paint);
             // 
             // _btnStart
             // 
             this._btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this._btnStart.Location = new System.Drawing.Point(14, 462);
+            this._btnStart.Location = new System.Drawing.Point(14, 445);
             this._btnStart.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._btnStart.Name = "_btnStart";
             this._btnStart.Size = new System.Drawing.Size(46, 25);
-            this._btnStart.TabIndex = 1;
+            this._btnStart.TabIndex = 2;
             this._btnStart.Text = "Go";
             this._btnStart.UseVisualStyleBackColor = true;
             this._btnStart.Click += new System.EventHandler(this.BtnStart_Click);
@@ -73,7 +73,7 @@
             // 
             this._lblDist.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblDist.AutoSize = true;
-            this._lblDist.Location = new System.Drawing.Point(16, 366);
+            this._lblDist.Location = new System.Drawing.Point(16, 356);
             this._lblDist.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._lblDist.Name = "_lblDist";
             this._lblDist.Size = new System.Drawing.Size(31, 15);
@@ -83,11 +83,12 @@
             // _btnStop
             // 
             this._btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._btnStop.Location = new System.Drawing.Point(593, 462);
+            this._btnStop.Enabled = false;
+            this._btnStop.Location = new System.Drawing.Point(593, 445);
             this._btnStop.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._btnStop.Name = "_btnStop";
             this._btnStop.Size = new System.Drawing.Size(46, 25);
-            this._btnStop.TabIndex = 5;
+            this._btnStop.TabIndex = 8;
             this._btnStop.Text = "Stop";
             this._btnStop.UseVisualStyleBackColor = true;
             this._btnStop.Click += new System.EventHandler(this.BtnStop_Click);
@@ -100,7 +101,7 @@
             0,
             0,
             0});
-            this._nudPopSize.Location = new System.Drawing.Point(66, 463);
+            this._nudPopSize.Location = new System.Drawing.Point(66, 446);
             this._nudPopSize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudPopSize.Maximum = new decimal(new int[] {
             10000,
@@ -114,7 +115,7 @@
             0});
             this._nudPopSize.Name = "_nudPopSize";
             this._nudPopSize.Size = new System.Drawing.Size(91, 23);
-            this._nudPopSize.TabIndex = 2;
+            this._nudPopSize.TabIndex = 3;
             this._nudPopSize.Value = new decimal(new int[] {
             750,
             0,
@@ -130,7 +131,7 @@
             0,
             0,
             0});
-            this._nudAmountCities.Location = new System.Drawing.Point(164, 463);
+            this._nudAmountCities.Location = new System.Drawing.Point(164, 446);
             this._nudAmountCities.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudAmountCities.Minimum = new decimal(new int[] {
             5,
@@ -139,7 +140,7 @@
             0});
             this._nudAmountCities.Name = "_nudAmountCities";
             this._nudAmountCities.Size = new System.Drawing.Size(80, 23);
-            this._nudAmountCities.TabIndex = 3;
+            this._nudAmountCities.TabIndex = 4;
             this._nudAmountCities.Value = new decimal(new int[] {
             20,
             0,
@@ -149,7 +150,7 @@
             // _nudMutationRate
             // 
             this._nudMutationRate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this._nudMutationRate.Location = new System.Drawing.Point(252, 463);
+            this._nudMutationRate.Location = new System.Drawing.Point(252, 446);
             this._nudMutationRate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudMutationRate.Maximum = new decimal(new int[] {
             99,
@@ -163,7 +164,7 @@
             0});
             this._nudMutationRate.Name = "_nudMutationRate";
             this._nudMutationRate.Size = new System.Drawing.Size(80, 23);
-            this._nudMutationRate.TabIndex = 4;
+            this._nudMutationRate.TabIndex = 5;
             this._nudMutationRate.Value = new decimal(new int[] {
             3,
             0,
@@ -175,7 +176,7 @@
             // 
             this._lblGen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._lblGen.AutoSize = true;
-            this._lblGen.Location = new System.Drawing.Point(175, 366);
+            this._lblGen.Location = new System.Drawing.Point(175, 356);
             this._lblGen.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._lblGen.Name = "_lblGen";
             this._lblGen.Size = new System.Drawing.Size(13, 15);
@@ -187,19 +188,19 @@
             this._tbGens.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this._tbGens.LargeChange = 1;
-            this._tbGens.Location = new System.Drawing.Point(14, 389);
+            this._tbGens.Location = new System.Drawing.Point(14, 379);
             this._tbGens.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._tbGens.Maximum = 0;
             this._tbGens.Name = "_tbGens";
             this._tbGens.Size = new System.Drawing.Size(624, 45);
-            this._tbGens.TabIndex = 6;
+            this._tbGens.TabIndex = 9;
             this._tbGens.ValueChanged += new System.EventHandler(this.TbGens_ValueChanged);
             // 
             // _label1
             // 
             this._label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label1.AutoSize = true;
-            this._label1.Location = new System.Drawing.Point(14, 351);
+            this._label1.Location = new System.Drawing.Point(14, 341);
             this._label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label1.Name = "_label1";
             this._label1.Size = new System.Drawing.Size(55, 15);
@@ -210,7 +211,7 @@
             // 
             this._label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label2.AutoSize = true;
-            this._label2.Location = new System.Drawing.Point(173, 351);
+            this._label2.Location = new System.Drawing.Point(173, 341);
             this._label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label2.Name = "_label2";
             this._label2.Size = new System.Drawing.Size(68, 15);
@@ -221,7 +222,7 @@
             // 
             this._lblGenATM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._lblGenATM.AutoSize = true;
-            this._lblGenATM.Location = new System.Drawing.Point(456, 366);
+            this._lblGenATM.Location = new System.Drawing.Point(456, 356);
             this._lblGenATM.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._lblGenATM.Name = "_lblGenATM";
             this._lblGenATM.Size = new System.Drawing.Size(13, 15);
@@ -232,7 +233,7 @@
             // 
             this._label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._label4.AutoSize = true;
-            this._label4.Location = new System.Drawing.Point(454, 351);
+            this._label4.Location = new System.Drawing.Point(454, 341);
             this._label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label4.Name = "_label4";
             this._label4.Size = new System.Drawing.Size(68, 15);
@@ -243,7 +244,7 @@
             // 
             this._lblTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._lblTime.AutoSize = true;
-            this._lblTime.Location = new System.Drawing.Point(550, 366);
+            this._lblTime.Location = new System.Drawing.Point(550, 356);
             this._lblTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._lblTime.Name = "_lblTime";
             this._lblTime.Size = new System.Drawing.Size(13, 15);
@@ -254,7 +255,7 @@
             // 
             this._label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._label5.AutoSize = true;
-            this._label5.Location = new System.Drawing.Point(547, 351);
+            this._label5.Location = new System.Drawing.Point(547, 341);
             this._label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label5.Name = "_label5";
             this._label5.Size = new System.Drawing.Size(36, 15);
@@ -269,7 +270,7 @@
             // _nudCores
             // 
             this._nudCores.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this._nudCores.Location = new System.Drawing.Point(340, 463);
+            this._nudCores.Location = new System.Drawing.Point(340, 446);
             this._nudCores.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._nudCores.Maximum = new decimal(new int[] {
             8,
@@ -283,7 +284,7 @@
             0});
             this._nudCores.Name = "_nudCores";
             this._nudCores.Size = new System.Drawing.Size(44, 23);
-            this._nudCores.TabIndex = 4;
+            this._nudCores.TabIndex = 6;
             this._nudCores.Value = new decimal(new int[] {
             1,
             0,
@@ -295,7 +296,7 @@
             // 
             this._label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label3.AutoSize = true;
-            this._label3.Location = new System.Drawing.Point(336, 445);
+            this._label3.Location = new System.Drawing.Point(336, 428);
             this._label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label3.Name = "_label3";
             this._label3.Size = new System.Drawing.Size(40, 15);
@@ -306,7 +307,7 @@
             // 
             this._label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label6.AutoSize = true;
-            this._label6.Location = new System.Drawing.Point(248, 445);
+            this._label6.Location = new System.Drawing.Point(248, 428);
             this._label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label6.Name = "_label6";
             this._label6.Size = new System.Drawing.Size(79, 15);
@@ -317,7 +318,7 @@
             // 
             this._label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label7.AutoSize = true;
-            this._label7.Location = new System.Drawing.Point(161, 445);
+            this._label7.Location = new System.Drawing.Point(161, 428);
             this._label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label7.Name = "_label7";
             this._label7.Size = new System.Drawing.Size(39, 15);
@@ -328,7 +329,7 @@
             // 
             this._label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this._label8.AutoSize = true;
-            this._label8.Location = new System.Drawing.Point(63, 445);
+            this._label8.Location = new System.Drawing.Point(63, 428);
             this._label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this._label8.Name = "_label8";
             this._label8.Size = new System.Drawing.Size(90, 15);
@@ -338,11 +339,11 @@
             // _btnNew
             // 
             this._btnNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this._btnNew.Location = new System.Drawing.Point(540, 462);
+            this._btnNew.Location = new System.Drawing.Point(540, 445);
             this._btnNew.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this._btnNew.Name = "_btnNew";
             this._btnNew.Size = new System.Drawing.Size(46, 25);
-            this._btnNew.TabIndex = 5;
+            this._btnNew.TabIndex = 7;
             this._btnNew.Text = "New";
             this._btnNew.UseVisualStyleBackColor = true;
             // 
@@ -350,7 +351,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(652, 500);
+            this.ClientSize = new System.Drawing.Size(652, 481);
             this.Controls.Add(this._tbGens);
             this.Controls.Add(this._nudCores);
             this.Controls.Add(this._nudMutationRate);
@@ -375,7 +376,6 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MinimumSize = new System.Drawing.Size(525, 430);
             this.Name = "MainView";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainView_FormClosing);
             this.Resize += new System.EventHandler(this.MainView_Resize);

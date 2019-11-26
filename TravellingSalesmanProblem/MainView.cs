@@ -20,7 +20,7 @@ namespace TravellingSalesmanProblem
         private readonly Random _random;
         private readonly List<(Route route, int gen)> _routeHistory;
         private ImmutableArray<PointF> _cities;
-        private Population? _pop;
+        private Population? _population;
         private CancellationTokenSource? _cts;
         // private Task? _runningTask;
         private DateTime _startTime;
@@ -33,13 +33,13 @@ namespace TravellingSalesmanProblem
             _routeHistory = new List<(Route route, int gen)>();
             InitializeComponent();
             _nudCores.Maximum = Environment.ProcessorCount;
-            DoubleBuffered = true;
         }
 
         private void Reset()
         {
             _routeHistory.Clear();
             _currentRoute = null;
+            _pnlCities.Invalidate(); // panel clear
             _bestRoute = null;
             _cts?.Cancel();
             _lblDist.Text = ZeroString;
@@ -50,12 +50,12 @@ namespace TravellingSalesmanProblem
 
         private void Start(int amountCities, int populationSize, double mutationRate)
         {
-            if (_pop != null) // we only need to reset if there was something before
+            if (_population != null) // we only need to reset if there was something before
                 Reset();
 
             _cts = new CancellationTokenSource();
             _cities = ImmutableArray.ToImmutableArray(_random.GenerateRandomPoints(amountCities));
-            _pop = new Population(_cities, populationSize, mutationRate)
+            _population = new Population(_cities, populationSize, mutationRate)
             {
                 AmountCores = (int)_nudCores.Value
             };
@@ -65,28 +65,31 @@ namespace TravellingSalesmanProblem
             _startTime = DateTime.UtcNow;
             _tmrEvolving.Start();
             _nudAmountCities.Enabled = false;
+            _btnStart.Enabled = false;
+            _tbGens.Focus();
+            _btnStop.Enabled = true;
 
             void DoTheThing(CancellationToken cancelToken)
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
                     NextGeneration();
-                    _lblGenATM.SetText(_pop!.Generation.ToString());
+                    _lblGenATM.SetText(_population!.Generation.ToString());
                 }
             }
         }
 
         private void NextGeneration()
         {
-            if (_pop == null)
+            if (_population == null)
                 return;
 
-            _pop.NextGeneration();
+            _population.NextGeneration();
 
-            if (_bestRoute == null || _pop.Best.TotalDistance < _bestRoute.TotalDistance)
+            if (_bestRoute == null || _population.Best.TotalDistance < _bestRoute.TotalDistance)
             {
-                _bestRoute = _pop.Best;
-                int gen = _pop.Generation;
+                _bestRoute = _population.Best;
+                int gen = _population.Generation;
                 _routeHistory.Add((_bestRoute, gen));
                 _tbGens.SetMaximum(_routeHistory.Count - 1);
 
@@ -117,9 +120,7 @@ namespace TravellingSalesmanProblem
 
             using Graphics graphics = e.Graphics;
             using Pen pen = new Pen(Color.Green, 2);
-
-            graphics.Clear(Color.White);
-            graphics.DrawLines(pen, _currentRoute.Points.Select(p => MapPointFToSize(p, _pnlCities.Size)).ToArray());
+            graphics.DrawLines(pen, _currentRoute.Points.Select(p => MapRelativePointFToSize(p, _pnlCities.Size)).ToArray());
         }
 
         private void TmrEvolving_Tick(object sender, EventArgs e)
@@ -148,26 +149,26 @@ namespace TravellingSalesmanProblem
 
         private void NudPopSize_ValueChanged(object sender, EventArgs e)
         {
-            if (_pop == null)
+            if (_population == null)
                 return;
 
-            _pop.Size = (int)_nudPopSize.Value;
+            _population.Size = (int)_nudPopSize.Value;
         }
 
         private void NudMutationRate_ValueChanged(object sender, EventArgs e)
         {
-            if (_pop == null)
+            if (_population == null)
                 return;
 
-            _pop.MutationRate = (double)_nudMutationRate.Value / 100;
+            _population.MutationRate = (double)_nudMutationRate.Value / 100;
         }
 
         private void NudCores_ValueChanged(object sender, EventArgs e)
         {
-            if (_pop == null)
+            if (_population == null)
                 return;
 
-            _pop.AmountCores = (int)_nudCores.Value;
+            _population.AmountCores = (int)_nudCores.Value;
         }
 
         private void MainView_Resize(object sender, EventArgs e)
@@ -177,9 +178,12 @@ namespace TravellingSalesmanProblem
 
         private void BtnStop_Click(object sender, EventArgs e)
         {
-            _nudAmountCities.Enabled = true;
-            _tmrEvolving.Stop();
             _cts?.Cancel();
+            _tmrEvolving.Stop();
+            _nudAmountCities.Enabled = true;
+            _btnStart.Enabled = true;
+            _btnStart.Focus();
+            _btnStop.Enabled = false;
         }
 
         private void MainView_FormClosing(object sender, FormClosingEventArgs e)
@@ -202,7 +206,7 @@ namespace TravellingSalesmanProblem
             base.Dispose(disposing);
         }
 
-        private static Point MapPointFToSize(PointF value, Size size) =>
+        private static Point MapRelativePointFToSize(PointF value, Size size) =>
             new Point
             {
                 X = (int)(value.X * size.Width),
