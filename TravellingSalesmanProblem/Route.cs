@@ -76,8 +76,15 @@ namespace TravellingSalesmanProblem
             int start = ThreadSafeRandom.Next(_order.Count);
             int count = ThreadSafeRandom.Next(_order.Count - start + 1);
 
-            List<int> newOrder = new List<int>(_order.Skip(start).Take(count));
+            List<int> newOrder = new List<int>(_order.Count); // we already know how many items there will be
 
+            // add slice of our orders
+            foreach (int cityIndex in _order.Skip(start).Take(count))
+            {
+                newOrder.Add(cityIndex); // no need to test if it exists here, it won't
+            }
+
+            // add all indices from the other route that aren't yet in the new route
             for (int i = 0; i < other._order.Count; i++)
             {
                 int cityIndex = other._order[i];
