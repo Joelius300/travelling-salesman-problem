@@ -1,5 +1,5 @@
 # [travelling-salesman-problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem)
+This is a solution to the [travelling-salesman-problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem) written in C# and visualized with WinForms.
 
-It's bad, I know. It's an old project which I might touch again in the future but not for now.
-Don't yell at me, I've already given myself enough facepalms for this projects.  
-Back then I thought this was truly amazing.. it's insane how much progress you can make within a single year.
+## Credits
+The idea and also the much of the algorithm itself came from [The Coding Train](https://thecodingtrain.com/). The videos I watched are [Coding Challenge #35.4: Traveling Salesperson with Genetic Algorithm](https://www.youtube.com/watch?v=M3KTWnTrU_c) and [Coding Challenge #35.5: TSP with Genetic Algorithm and Crossover](https://www.youtube.com/watch?v=hnxn6DtLYcY).
