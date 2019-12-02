@@ -48,32 +48,31 @@ namespace TravellingSalesmanProblem
             if (AmountCores > 1 && AmountCores <= Environment.ProcessorCount)
             {
                 _parallelOptions.MaxDegreeOfParallelism = AmountCores;
-
+                // Contradictory to what I said before, using the default constructor will NOT yield random instances with the same
+                // "random" sequence ANYMORE (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/Random.cs#L38)
+                // Therefore, this is as probably the best way of doing it (some performance testing might be required sometime later).
                 Parallel.For(
                     0, newRoutes.Length,    // from, to
                     _parallelOptions,       // options
-                    (i, loop) =>            // method which uses the index and the loop state (used to cancel loop)
+                    () => new Random(),     // initialize thread-local variable
+                    (i, loop, rng) =>       // method which uses the index, the loop state (used to cancel loop) and the thread-local Random
                     {
-                        newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
-                    }
+                        newRoutes[i] = GetNewRoute(rng);
+
+                        return rng;
+                    },
+                    rng => { } // no-op because null is not allowed
                 );
 
-                // This also works but I assume it's a bit less random. The thread-local Random which is used here will be created using the default
-                // constructor which, if called multiple times in a small timeframe (like here), might produce the same "random"-sequences. However if you use
-                // the ThreadSafeRandom class, the thread-local (or thread-static) instance will be created using a random seed from a global (non-thread-static)
-                // Random instance. The lock which is used for aquiring a random seed for a new thread-local Random instance probably makes the current solution
-                // slightly less performant but not by much (only very rough and sloppy testing was done).
+                // This would also work perfectly fine but we don't need to use the ThreadSafeRandom class here because the Parallel
+                // class has an elegant way of working with thread-local variables itself.
                 // Parallel.For(
                 //     0, newRoutes.Length,    // from, to
                 //     _parallelOptions,       // options
-                //     () => new Random(),     // initialize thread-local variable
-                //     (i, loop, rng) =>       // method which uses the index, the loop state (used to cancel loop) and the thread-local Random
+                //     (i, loop) =>            // method which uses the index and the loop state (used to cancel loop)
                 //     {
-                //         newRoutes[i] = GetNewRoute(rng);
-
-                //         return rng;
-                //     },
-                //     rng => { } // no-op because null is not allowed
+                //         newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
+                //     }
                 // );
             }
             else
