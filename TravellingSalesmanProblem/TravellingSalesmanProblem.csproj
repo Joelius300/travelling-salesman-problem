@@ -7,6 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <StartupObject />
+    <Configurations>Debug;Release;PARTITIONER_THLOCAL;PARTITIONER;FOR;FOR_THLOCAL</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

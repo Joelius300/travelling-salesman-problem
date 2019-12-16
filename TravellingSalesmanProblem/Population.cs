@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -48,9 +49,50 @@ namespace TravellingSalesmanProblem
             if (AmountCores > 1 && AmountCores <= Environment.ProcessorCount)
             {
                 _parallelOptions.MaxDegreeOfParallelism = AmountCores;
+
+#if PARTITIONER_THLOCAL
+                // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-speed-up-small-loop-bodies
+                OrderablePartitioner<Tuple<int, int>> rangePartitioner = Partitioner.Create(0, newRoutes.Length);
+                Parallel.ForEach(
+                    rangePartitioner,
+                    _parallelOptions,
+                    () => new Random(),
+                    (range, loop, rng) =>
+                    {
+                        for (int i = range.Item1; i < range.Item2; i++)
+                        {
+                            newRoutes[i] = GetNewRoute(rng);
+                        }
+
+                        return rng;
+                    },
+                    rng => { } // no-op because null is not allowed
+                );
+#elif PARTITIONER
+                // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-speed-up-small-loop-bodies
+                OrderablePartitioner<Tuple<int, int>> rangePartitioner = Partitioner.Create(0, newRoutes.Length);
+                Parallel.ForEach(rangePartitioner, _parallelOptions, (range, loop) =>
+                {
+                    for (int i = range.Item1; i < range.Item2; i++)
+                    {
+                        newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
+                    }
+                });
+#elif FOR
+                // This would also work perfectly fine but we don't need to use the ThreadSafeRandom class here because the Parallel
+                // class has an elegant way of working with thread-local variables itself.
+                Parallel.For(
+                    0, newRoutes.Length,    // from, to
+                    _parallelOptions,       // options
+                    (i, loop) =>            // method which uses the index and the loop state (used to cancel loop)
+                    {
+                        newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
+                    }
+                );
+#else
                 // Contradictory to what I said before, using the default constructor will NOT yield random instances with the same
                 // "random" sequence ANYMORE (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/Random.cs#L38)
-                // Therefore, this is as probably the best way of doing it (some performance testing might be required sometime later).
+                // Therefore, this is as probably the best way of doing it. It's also very very slightly faster according to my cheap testing.
                 Parallel.For(
                     0, newRoutes.Length,    // from, to
                     _parallelOptions,       // options
@@ -63,17 +105,7 @@ namespace TravellingSalesmanProblem
                     },
                     rng => { } // no-op because null is not allowed
                 );
-
-                // This would also work perfectly fine but we don't need to use the ThreadSafeRandom class here because the Parallel
-                // class has an elegant way of working with thread-local variables itself.
-                // Parallel.For(
-                //     0, newRoutes.Length,    // from, to
-                //     _parallelOptions,       // options
-                //     (i, loop) =>            // method which uses the index and the loop state (used to cancel loop)
-                //     {
-                //         newRoutes[i] = GetNewRoute(ThreadSafeRandom.ThreadSafeInstance);
-                //     }
-                // );
+#endif
             }
             else
             {

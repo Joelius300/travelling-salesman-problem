@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -16,9 +17,12 @@ namespace TravellingSalesmanProblem
     {
         private const string ZeroString = "0";
         private const string TimeFormatString = "{0:hh\\:mm\\:ss}";
+        private const int AvgListSize = 250;
 
         private readonly Random _random;
         private readonly List<(Route route, int gen)> _routeHistory;
+        private readonly Stopwatch _genStopWatch;
+        private readonly List<long> _avgList;
         private ImmutableArray<PointF> _cities;
         private Population? _population;
         private CancellationTokenSource? _cts;
@@ -31,8 +35,20 @@ namespace TravellingSalesmanProblem
         {
             _random = new Random();
             _routeHistory = new List<(Route route, int gen)>();
+            _genStopWatch = new Stopwatch();
+            _avgList = new List<long>(AvgListSize);
             InitializeComponent();
             _nudCores.Maximum = Environment.ProcessorCount;
+
+#if PARTITIONER_THLOCAL
+            Text += " (PARTITIONER_THLOCAL)";
+#elif PARTITIONER
+            Text += " (PARTITIONER)";
+#elif FOR
+            Text += " (FOR)";
+#else
+            Text += " (FOR_THLOCAL)";
+#endif
         }
 
         private void Reset()
@@ -41,11 +57,13 @@ namespace TravellingSalesmanProblem
             _currentRoute = null;
             _pnlCities.Invalidate(); // panel clear
             _bestRoute = null;
+            _avgList.Clear();
             _cts?.Cancel();
             _lblDist.Text = ZeroString;
             _lblGen.Text = ZeroString;
             _lblGenATM.Text = ZeroString;
             _lblTime.Text = string.Format(TimeFormatString, TimeSpan.Zero);
+            _lblAvgTime.Text = "-";
         }
 
         private void Start(int amountCities, int populationSize, double mutationRate)
@@ -74,7 +92,6 @@ namespace TravellingSalesmanProblem
                 while (!cancelToken.IsCancellationRequested)
                 {
                     NextGeneration();
-                    _lblGenATM.SetText(_population!.Generation.ToString());
                 }
             }
         }
@@ -84,7 +101,13 @@ namespace TravellingSalesmanProblem
             if (_population == null)
                 return;
 
+            _genStopWatch.Start();
             _population.NextGeneration();
+            _avgList.Add(_genStopWatch.ElapsedMilliseconds);
+            _lblAvgTime.SetText($"{_avgList.Average():F2} ms");
+            _lblGenATM.SetText(_population.Generation.ToString());
+            _genStopWatch.Reset();
+            if (_avgList.Count >= AvgListSize) _avgList.Clear();
 
             if (_bestRoute == null || _population.Best.TotalDistance < _bestRoute.TotalDistance)
             {

@@ -38,11 +38,14 @@
             this._label7 = new System.Windows.Forms.Label();
             this._label8 = new System.Windows.Forms.Label();
             this._btnNew = new System.Windows.Forms.Button();
+            this._lblAvgTime = new System.Windows.Forms.Label();
+            this._label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this._nudPopSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudAmountCities)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudMutationRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._tbGens)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudCores)).BeginInit();
+            this.SuspendLayout();
             // 
             // _pnlCities
             // 
@@ -347,12 +350,36 @@
             this._btnNew.Text = "New";
             this._btnNew.UseVisualStyleBackColor = true;
             // 
+            // _lblAvgTime
+            // 
+            this._lblAvgTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this._lblAvgTime.AutoSize = true;
+            this._lblAvgTime.Location = new System.Drawing.Point(380, 356);
+            this._lblAvgTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._lblAvgTime.Name = "_lblAvgTime";
+            this._lblAvgTime.Size = new System.Drawing.Size(13, 15);
+            this._lblAvgTime.TabIndex = 2;
+            this._lblAvgTime.Text = "0";
+            // 
+            // _label9
+            // 
+            this._label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this._label9.AutoSize = true;
+            this._label9.Location = new System.Drawing.Point(378, 341);
+            this._label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this._label9.Name = "_label9";
+            this._label9.Size = new System.Drawing.Size(63, 15);
+            this._label9.TabIndex = 2;
+            this._label9.Text = "Gen. Time:";
+            // 
             // MainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(652, 481);
+            this.Controls.Add(this._lblAvgTime);
             this.Controls.Add(this._tbGens);
+            this.Controls.Add(this._label9);
             this.Controls.Add(this._nudCores);
             this.Controls.Add(this._nudMutationRate);
             this.Controls.Add(this._nudAmountCities);
@@ -377,6 +404,7 @@
             this.MinimumSize = new System.Drawing.Size(525, 430);
             this.Name = "MainView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Travelling-Salesman-Problem";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainView_FormClosing);
             this.Resize += new System.EventHandler(this.MainView_Resize);
             ((System.ComponentModel.ISupportInitialize)(this._nudPopSize)).EndInit();
@@ -384,6 +412,8 @@
             ((System.ComponentModel.ISupportInitialize)(this._nudMutationRate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._tbGens)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._nudCores)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -411,5 +441,7 @@
         private System.Windows.Forms.Label _label7;
         private System.Windows.Forms.Label _label8;
         private System.Windows.Forms.Button _btnNew;
+        private System.Windows.Forms.Label _lblAvgTime;
+        private System.Windows.Forms.Label _label9;
     }
 }
